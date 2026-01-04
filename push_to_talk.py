@@ -21,29 +21,28 @@ def record_until_enter(sample_rate: int, channels: int) -> np.ndarray:
     def callback(indata: np.ndarray, frames: int, time, status) -> None: 
         # This function is called repeatedly by sounddevice as audio arrives
         # Copy the data and store
-
         if status: # If no fatal warning, then we're good to go
             print(status, flush=True)
         chunks.append(indata.copy()) # Take a copy to freeze the data as it was for that moment
 
         # Start a live input stream; while it runs, the callback collects chunks.
-        with sd.InputStream(
-            samplerate=sample_rate, 
-            channels=channels, 
-            dtype="int16", 
-            callback=callback
-        ): 
-            input() # wait for ENTER to stop
+    with sd.InputStream(
+        samplerate=sample_rate,             
+        channels=channels, 
+        dtype="int16", 
+        callback=callback
+    ): 
+        input() # wait for ENTER to stop
         
-        print("Stopped recording.")
+    print("Stopped recording.")
 
-        if not chunks: 
-            return np.empty((0, channels), dtype=np.int16)
+    if not chunks: 
+        return np.empty((0, channels), dtype=np.int16)
     
-        return np.concatenate(chunks, axis=0)
+    return np.concatenate(chunks, axis=0)
 
 def main() -> None: 
-    print("Push-to-talk demo (ENTER to start, ENTER to stop.")
+    print("Push-to-talk demo (ENTER to start, ENTER to stop).")
 
     audio = record_until_enter(SAMPLE_RATE, CHANNELS)
 
